@@ -10,11 +10,14 @@ import SwiftData
 
 @main
 struct Wave_ScribeApp: App {
-  
-
+    
     var body: some Scene {
         WindowGroup {
             MainView()
+                .onAppear {
+                    requestMicPermission()
+                }
+            
         }
         
     }
