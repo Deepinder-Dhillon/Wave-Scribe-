@@ -1,0 +1,38 @@
+# Xcode
+############################
+build/                            # Local build products
+DerivedData/                      # Xcode build cache
+*.xcworkspace                     # User workspace data (unless you check in a shared workspace)
+xcuserdata/                       # Per-user Xcode settings
+*.xcuserstate                     # User interface state
+
+# Swift Package Manager
+############################
+.build/                           # Built SPM artifacts
+Package.resolved                  # Lock file (optional: you can check this in)
+
+# CocoaPods
+############################
+Pods/                             # CocoaPods dependencies (optional to ignore)
+
+# Carthage
+############################
+Carthage/Build/                   # Carthage build artifacts
+
+# fastlane
+############################
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+
+# macOS
+############################
+.DS_Store                         # Finder metadata
+
+# Misc
+############################
+*.moved-aside                     # Xcode migration artifacts
+*.pbxuser                         # Old-style Xcode user settings
+*.mode1v3                         # Old Xcode project modes
+*.mode2v3
+*.perspectivev3
