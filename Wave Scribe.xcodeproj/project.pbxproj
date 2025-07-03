@@ -10,9 +10,33 @@
 		7F498C892E150FD9003996D5 /* Wave Scribe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wave Scribe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7F498CA52E162AD5003996D5 /* Exceptions for "Wave Scribe" folder in "Wave Scribe" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				.swift,
+			);
+			target = 7F498C882E150FD9003996D5 /* Wave Scribe */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		7F498CA62E162AD5003996D5 /* Exceptions for "Wave Scribe" folder in "Compile Sources" phase from "Wave Scribe" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 7F498C852E150FD9003996D5 /* Sources */;
+			membershipExceptions = (
+				.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7F498C8B2E150FD9003996D5 /* Wave Scribe */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7F498CA52E162AD5003996D5 /* Exceptions for "Wave Scribe" folder in "Wave Scribe" target */,
+				7F498CA62E162AD5003996D5 /* Exceptions for "Wave Scribe" folder in "Compile Sources" phase from "Wave Scribe" target */,
+			);
 			path = "Wave Scribe";
 			sourceTree = "<group>";
 		};
@@ -82,6 +106,7 @@
 				TargetAttributes = {
 					7F498C882E150FD9003996D5 = {
 						CreatedOnToolsVersion = 16.2;
+						LastSwiftMigration = 1620;
 					};
 				};
 			};
@@ -249,6 +274,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Wave Scribe/Preview Content\"";
@@ -268,6 +294,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.deepinder.Wave-Scribe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Wave Scribe/Wave Scribe-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -278,6 +306,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Wave Scribe/Preview Content\"";
@@ -297,6 +326,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.deepinder.Wave-Scribe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Wave Scribe/Wave Scribe-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
