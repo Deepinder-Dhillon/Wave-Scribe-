@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		7F498CB32E163DB9003996D5 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F498CB12E163D86003996D5 /* AVFoundation.framework */; };
+		7FC4C20F2E1779C20033AF4C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FC4C20D2E1779830033AF4C /* CoreGraphics.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		7F498C892E150FD9003996D5 /* Wave Scribe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wave Scribe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F498CB12E163D86003996D5 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		7FC4C20D2E1779830033AF4C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -28,6 +30,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7FC4C20F2E1779C20033AF4C /* CoreGraphics.framework in Frameworks */,
 				7F498CB32E163DB9003996D5 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -55,6 +58,7 @@
 		7F498CB02E163D86003996D5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7FC4C20D2E1779830033AF4C /* CoreGraphics.framework */,
 				7F498CB12E163D86003996D5 /* AVFoundation.framework */,
 			);
 			name = Frameworks;

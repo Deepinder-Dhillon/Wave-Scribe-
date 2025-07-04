@@ -5,11 +5,12 @@ struct RecordView: View {
     private let modes = ["Waveform", "Transcribe"]
     let timer = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect()
     
+    @Environment(\.dismiss) private var dismiss
+    
+    @StateObject private var audiomanager = AudioManager()
     @State private var selectedMode = "Waveform"
-    @State private var isRunning: Bool = false
     @State var elapsed: Double = 0
     @State private var level: CGFloat = 0
-    @State private var waveformTimer: Timer? // temporary  to see waveform
     
     var body: some View {
         VStack(spacing: 4) {
@@ -23,14 +24,8 @@ struct RecordView: View {
             
             if selectedMode == "Waveform" {
                 WaveformView(level: $level)
-                    .onChange(of: isRunning) {
-                        if isRunning {
-                            waveformTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
-                                level = CGFloat.random(in: 0...0.5)
-                            }
-                        } else {
-                            waveformTimer?.invalidate()
-                            waveformTimer = nil
+                    .onChange(of: audiomanager.state) {
+                        if audiomanager.state == .paused || audiomanager.state == .stopped {
                             level = 0
                         }
                     }
@@ -39,14 +34,18 @@ struct RecordView: View {
                 TranscribeView()
             }
         }
+        .onAppear {
+            audiomanager.start()
+        }
         Spacer()
         
         VStack{
             Text(formatMMSSCs(elapsed))
                 .font(.system(size: 38))
                 .onReceive(timer) { _ in
-                    if isRunning {
+                    if audiomanager.state == .recording {
                         elapsed += 0.01
+                        level = 0
                     }
                 }
         }
@@ -57,7 +56,9 @@ struct RecordView: View {
             ZStack {
                 HStack {
                     Button {
-                        isRunning = false
+                        audiomanager.stop()
+                        dismiss()
+                        
                     } label: {
                         Image(systemName: "stop.circle.fill")
                             .font(.system(size: 60))
@@ -65,15 +66,19 @@ struct RecordView: View {
                             .opacity(0.7)
                         
                     }
-                    
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.horizontal, 50)
                     
                 }
                 Button {
-                    isRunning.toggle()
+                    if audiomanager.state == .recording {
+                        audiomanager.pause()
+                    }
+                    else if audiomanager.state == .paused {
+                        audiomanager.resume()
+                    }
                 } label: {
-                    Image(systemName: isRunning
+                    Image(systemName: audiomanager.state == .paused
                           ? "pause.circle.fill"
                           : "largecircle.fill.circle")
                     .font(.system(size: 90))
@@ -95,6 +100,6 @@ func formatMMSSCs(_ seconds: Double) -> String {
 }
 
 #Preview {
-    RecordView()
+    RecordView ()
     
 }

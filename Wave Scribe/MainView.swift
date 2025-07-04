@@ -6,6 +6,8 @@ struct MainView: View {
     @State private var editingMode: EditMode = .inactive
     @State private var selectedRecordings = Set<String>()
     @State private var showDeniedAlert = false
+    @State private var showRecordView = false
+    
     
     var body: some View {
         NavigationStack {
@@ -22,6 +24,7 @@ struct MainView: View {
                         } label: {
                             Image(systemName: "trash")
                         }
+                        .disabled(selectedRecordings.isEmpty)
                     }
                 }
                 
@@ -36,8 +39,12 @@ struct MainView: View {
             .overlay(alignment: .bottom) {
                 Button {
                     if canRecordAudio() {
+                        showRecordView = true
                     } else {
-                        showDeniedAlert = true
+                        requestMicPermission()
+                        if !canRecordAudio() {
+                            showDeniedAlert = true
+                        }
                     }
                 } label: {
                     Image(systemName: "largecircle.fill.circle")
@@ -51,6 +58,10 @@ struct MainView: View {
                 Button("OK") { showDeniedAlert = false }
             } message: {
                 Text("Please enable microphone access in Settings.")
+            }
+            .fullScreenCover(isPresented: $showRecordView) {
+              RecordView()
+                
             }
         }
     }
