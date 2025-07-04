@@ -1,8 +1,9 @@
 import SwiftUI
 
 struct MainView: View {
-    @State private var recordings = ["Recording 1", "Recording 2", "Recording 3", "Recording 4", "Recording 5", "Recording 6", "Recording 7", "Recording 8", "Recording 9", "Recording 10", "Recording 11", "Recording 12", "Recording 13", "Recording 14", "Recording 15"]
+    @EnvironmentObject var audioManager: AudioManager
     
+    @State private var recordings = ["Recording 1", "Recording 2", "Recording 3", "Recording 4", "Recording 5", "Recording 6", "Recording 7", "Recording 8"]
     @State private var editingMode: EditMode = .inactive
     @State private var selectedRecordings = Set<String>()
     @State private var showDeniedAlert = false
@@ -40,6 +41,7 @@ struct MainView: View {
                 Button {
                     if canRecordAudio() {
                         showRecordView = true
+                        audioManager.start()
                     } else {
                         requestMicPermission()
                         if !canRecordAudio() {
@@ -60,8 +62,13 @@ struct MainView: View {
                 Text("Please enable microphone access in Settings.")
             }
             .fullScreenCover(isPresented: $showRecordView) {
-              RecordView()
-                
+                RecordView()
+                    .environmentObject(audioManager)
+                    .onDisappear{
+                        if audioManager.state != .stopped {
+                            audioManager.stop()
+                        }
+                    }
             }
         }
     }
@@ -90,5 +97,7 @@ struct MainView: View {
 
 #Preview {
     MainView()
+        .environmentObject(AudioManager())
     
 }
+
