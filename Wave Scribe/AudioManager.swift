@@ -21,13 +21,30 @@ final class AudioManager: ObservableObject {
     private var wasInterrupted = false
     private var settings = Settings()
     
+    private var currentSegmentIndex: Int = 0
+    private var currentSegmentFrames: AVAudioFrameCount = 0
+    private let segmentDuration: Double = 30
+    private var segmentTargetFrames: AVAudioFrameCount {
+        AVAudioFrameCount(settings.sampleRate * segmentDuration)
+    }
+    private var currentSegmentFile: AVAudioFile?
+    private var recordingStartTime: Date?
+
+    private let backgroundContext: NSManagedObjectContext
+    private var currentRecording: Recording?
+    private var currentRecordingID: UUID?
+    private let recordingsRootURL: URL
+
+    
     init() {
+        self.backgroundContext = CoreDataStack.shared.persistentContainer.newBackgroundContext()
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let root = docs.appendingPathComponent("Recordings")
+        try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        self.recordingsRootURL = root
+        
         configureAudioSession()
         setupNotifications()
-    }
-    
-    private func calFrames() -> Int {
-        return   Int(settings.sampleRate * 30.0)
     }
     
     private func configureAudioSession() {
@@ -86,15 +103,9 @@ final class AudioManager: ObservableObject {
             return
         }
         
-                let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                let filename = "rec_\(Int(Date().timeIntervalSince1970)).m4a"
-                let url = docs.appendingPathComponent(filename)
-                currentFileURL = url
-        
-                audioFile = try? AVAudioFile(
-                    forWriting: url,
-                    settings: settings.avSettings)
-        
+        currentRecordingID = UUID()
+        createRecordingEntity()
+        startNewSegment()
         addInputTap()
         
         do {
@@ -134,6 +145,12 @@ final class AudioManager: ObservableObject {
             mixerNode.removeTap(onBus: 0)
             tapInstalled = false
         }
+        saveCurrentSegment()
+
+        backgroundContext.perform {
+            self.currentRecording?.status = "recorded"
+            try? self.backgroundContext.save()
+        }
         
         try? session.setActive(false)
         audioFile = nil
@@ -164,11 +181,10 @@ final class AudioManager: ObservableObject {
             tapInstalled = false
         }
         
-                mixerNode.installTap(onBus: 0, bufferSize: 4096, format: nil) { [weak self] buffer, _ in
-                    try? self?.audioFile?.write(from: buffer)
-                    self?.updateLevel(from: buffer)
-                }
-             
+        mixerNode.installTap(onBus: 0, bufferSize: 4096, format: nil) { [weak self] buffer, _ in
+            self?.processBuffer(buffer)
+        }
+        
         tapInstalled = true
     }
     private func setupNotifications() {
@@ -207,7 +223,6 @@ final class AudioManager: ObservableObject {
             engine.pause()
             state = .paused
         }
-        
         rebuildEngine()
         
         do {
@@ -279,6 +294,84 @@ final class AudioManager: ObservableObject {
             sampleRate: sampleRate, channels: channels, bitRate: bitRate,
             formatType: formatType)
         
+    }
+    
+    private func createNewSegmentFile() {
+        guard let recID = currentRecordingID else { return }
+
+        let name = "\(recID.uuidString)_seg_\(String(format: "%03d", currentSegmentIndex)).m4a"
+        let url  = recordingsRootURL.appendingPathComponent(name)
+        currentSegmentFile = try? AVAudioFile(forWriting: url, settings: settings.avSettings)
+    }
+    
+    private func saveCurrentSegment() {
+        guard let segFile = currentSegmentFile else { return }
+
+        // actual duration
+        let dur = Double(currentSegmentFrames) / settings.sampleRate
+        let segURL = segFile.url
+
+        currentSegmentFile = nil
+        currentSegmentFrames = 0
+
+        backgroundContext.perform {
+            let seg = Segment(context: self.backgroundContext)
+            seg.id = UUID()
+            seg.index = Int16(self.currentSegmentIndex)
+            seg.duration = dur
+            seg.fileURL = segURL.path
+            seg.createdAt = Date()
+            seg.state = "pendingUpload"
+            seg.recording = self.currentRecording
+            seg.startTime = Double(self.currentSegmentIndex - 1) * self.segmentDuration
+
+            if let rec = self.currentRecording {
+                rec.totalSegments += 1
+                rec.duration += dur
+            }
+
+            try? self.backgroundContext.save()
+        }
+    }
+    
+    private func startNewSegment() {
+        currentSegmentIndex += 1
+        createNewSegmentFile()
+    }
+    
+    private func createRecordingEntity() {
+        backgroundContext.performAndWait {
+            let rec = Recording(context: self.backgroundContext)
+            rec.id = self.currentRecordingID
+            rec.startTime = Date()
+            rec.status = "recording"
+            rec.totalSegments = 0
+            rec.duration = 0
+            rec.title = ""
+            rec.transcript = ""
+            try? self.backgroundContext.save()
+
+            DispatchQueue.main.async { self.currentRecording = rec }
+        }
+    }
+    
+    private func processBuffer(_ buffer: AVAudioPCMBuffer) {
+        guard state == .recording else { return }
+
+        do {
+            try currentSegmentFile?.write(from: buffer)
+        }
+        catch {
+            print("failed to write to file", error);
+            return
+        }
+        currentSegmentFrames += buffer.frameLength
+
+        if currentSegmentFrames >= segmentTargetFrames {
+            saveCurrentSegment()
+            startNewSegment()
+        }
+        updateLevel(from: buffer)
     }
     
 }
