@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F2E8C3C2E18AD8C00D3CBD8 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7F2E8C3A2E18AD8C00D3CBD8 /* Model.xcdatamodeld */; };
 		7F498CB32E163DB9003996D5 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F498CB12E163D86003996D5 /* AVFoundation.framework */; };
 		7FC4C20F2E1779C20033AF4C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FC4C20D2E1779830033AF4C /* CoreGraphics.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7F2E8C3B2E18AD8C00D3CBD8 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		7F498C892E150FD9003996D5 /* Wave Scribe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wave Scribe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F498CB12E163D86003996D5 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		7FC4C20D2E1779830033AF4C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -41,6 +43,7 @@
 		7F498C802E150FD9003996D5 = {
 			isa = PBXGroup;
 			children = (
+				7F2E8C3A2E18AD8C00D3CBD8 /* Model.xcdatamodeld */,
 				7F498C8B2E150FD9003996D5 /* Wave Scribe */,
 				7F498CB02E163D86003996D5 /* Frameworks */,
 				7F498C8A2E150FD9003996D5 /* Products */,
@@ -139,6 +142,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F2E8C3C2E18AD8C00D3CBD8 /* Model.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,6 +367,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		7F2E8C3A2E18AD8C00D3CBD8 /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				7F2E8C3B2E18AD8C00D3CBD8 /* Model.xcdatamodel */,
+			);
+			currentVersion = 7F2E8C3B2E18AD8C00D3CBD8 /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 7F498C812E150FD9003996D5 /* Project object */;
 }

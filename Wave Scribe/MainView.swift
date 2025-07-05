@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainView: View {
     @EnvironmentObject var audioManager: AudioManager
+    @Environment(\.managedObjectContext) private var viewContext
     
     @State private var recordings = ["Recording 1", "Recording 2", "Recording 3", "Recording 4", "Recording 5", "Recording 6", "Recording 7", "Recording 8"]
     @State private var editingMode: EditMode = .inactive
