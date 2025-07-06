@@ -1,4 +1,5 @@
 import AVFAudio
+import CloudKit
 
 func requestMicPermission() {
     let status = AVAudioApplication.shared.recordPermission
@@ -11,4 +12,37 @@ func requestMicPermission() {
 
 func canRecordAudio() -> Bool {
     AVAudioApplication.shared.recordPermission == .granted
+}
+
+
+func saveAPIKeyRecord() async{
+    let recordID = CKRecord.ID(recordName: "whisper-api")
+    let record = CKRecord(recordType: "APIKey", recordID: recordID)
+
+   // save your own key
+    record.encryptedValues["key"] = "your key" as NSString
+
+    let privateDB = CKContainer.default().privateCloudDatabase
+    do {
+        try await privateDB.save(record)
+    } catch {
+        print("failed to save key:", error)
+    }
+}
+
+
+func fetchAPIKey() async -> String {
+    let recordID = CKRecord.ID(recordName: "whisper-api")
+    let privateDB = CKContainer.default().privateCloudDatabase
+    
+    var key = ""
+    do {
+        let record = try await privateDB.record(for: recordID)
+        key = record.encryptedValues["key"] as? String ?? ""
+    
+    } catch {
+        print("failed to fetch apikey:", error)
+    }
+    return key
+    
 }

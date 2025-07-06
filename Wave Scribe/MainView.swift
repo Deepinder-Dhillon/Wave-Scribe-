@@ -56,11 +56,6 @@ struct MainView: View {
                 }
                 .padding(.bottom, 40)
             }
-            Button("pressme") {
-                Task {
-                    await audioManager.fetchAPIKey()
-                }
-            }
             .alert("Microphone Needed",
                    isPresented: $showDeniedAlert) {
                 Button("OK") { showDeniedAlert = false }

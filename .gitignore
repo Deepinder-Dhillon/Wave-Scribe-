@@ -28,6 +28,7 @@ fastlane/screenshots/**/*.png
 # macOS
 ############################
 .DS_Store                         # Finder metadata
+**/.DS_Store
 
 # Misc
 ############################

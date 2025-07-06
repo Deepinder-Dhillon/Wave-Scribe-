@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F1ABBC72E1A244B009C4265 /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 7F1ABBC62E1A244B009C4265 /* SwiftOpenAI */; };
 		7F2E8C3C2E18AD8C00D3CBD8 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7F2E8C3A2E18AD8C00D3CBD8 /* Model.xcdatamodeld */; };
 		7F498CB32E163DB9003996D5 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F498CB12E163D86003996D5 /* AVFoundation.framework */; };
 		7FC4C20F2E1779C20033AF4C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FC4C20D2E1779830033AF4C /* CoreGraphics.framework */; };
@@ -33,6 +34,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7FC4C20F2E1779C20033AF4C /* CoreGraphics.framework in Frameworks */,
+				7F1ABBC72E1A244B009C4265 /* SwiftOpenAI in Frameworks */,
 				7F498CB32E163DB9003996D5 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -87,6 +89,7 @@
 			);
 			name = "Wave Scribe";
 			packageProductDependencies = (
+				7F1ABBC62E1A244B009C4265 /* SwiftOpenAI */,
 			);
 			productName = "Wave Scribe";
 			productReference = 7F498C892E150FD9003996D5 /* Wave Scribe.app */;
@@ -118,6 +121,7 @@
 			mainGroup = 7F498C802E150FD9003996D5;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				7F1ABBC52E1A244B009C4265 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7F498C8A2E150FD9003996D5 /* Products */;
@@ -371,6 +375,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7F1ABBC52E1A244B009C4265 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jamesrochabrun/SwiftOpenAI";
+			requirement = {
+				kind = exactVersion;
+				version = 4.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7F1ABBC62E1A244B009C4265 /* SwiftOpenAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7F1ABBC52E1A244B009C4265 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */;
+			productName = SwiftOpenAI;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		7F2E8C3A2E18AD8C00D3CBD8 /* Model.xcdatamodeld */ = {

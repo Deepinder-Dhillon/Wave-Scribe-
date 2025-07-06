@@ -1,7 +1,7 @@
 import AVFoundation
 import Foundation
 import CoreData
-import CloudKit
+
 
 final class AudioManager: ObservableObject {
     enum RecordingState {
@@ -30,18 +30,22 @@ final class AudioManager: ObservableObject {
     }
     private var currentSegmentFile: AVAudioFile?
     private var recordingStartTime: Date?
-
+    
     private let backgroundContext: NSManagedObjectContext
     private var currentRecording: Recording?
     private var currentRecordingID: UUID?
     private let recordingsRootURL: URL
-
+    
+    private let transcriptionManager: TranscriptionManager
+    
     
     init() {
         self.backgroundContext = CoreDataStack.shared.persistentContainer.newBackgroundContext()
+        self.transcriptionManager = TranscriptionManager(context: backgroundContext)
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let root = docs.appendingPathComponent("Recordings")
         try? FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        
         self.recordingsRootURL = root
         
         configureAudioSession()
@@ -91,34 +95,6 @@ final class AudioManager: ObservableObject {
         addInputTap()
     }
     
-    func saveAPIKeyRecord() async{
-        let recordID = CKRecord.ID(recordName: "whisper-api")
-        let record = CKRecord(recordType: "APIKey", recordID: recordID)
-
-       // save your own key
-        record.encryptedValues["key"] = "your key" as NSString
-
-        let privateDB = CKContainer.default().privateCloudDatabase
-        do {
-            try await privateDB.save(record)
-        } catch {
-            print("failed to save key:", error)
-        }
-    }
-    
-    
-    func fetchAPIKey() async {
-        let recordID = CKRecord.ID(recordName: "whisper-api")
-        let privateDB = CKContainer.default().privateCloudDatabase
-
-        do {
-            let record = try await privateDB.record(for: recordID)
-            let key = record.encryptedValues["key"] as? String
-        
-        } catch {
-            print("failed to fetch apikey:", error)
-        }
-    }
     
     func start() {
         guard state == .stopped else { return }
@@ -176,7 +152,7 @@ final class AudioManager: ObservableObject {
             tapInstalled = false
         }
         saveCurrentSegment()
-
+        
         backgroundContext.perform {
             self.currentRecording?.status = "recorded"
             try? self.backgroundContext.save()
@@ -260,7 +236,7 @@ final class AudioManager: ObservableObject {
             try engine.start()
             if wasRecording { state = .recording }
         } catch {
-            print("Restart after route change failed:", error)
+            print("restart after route change failed:", error)
             resumePrompt = true
         }
     }
@@ -328,7 +304,7 @@ final class AudioManager: ObservableObject {
     
     private func createNewSegmentFile() {
         guard let recID = currentRecordingID else { return }
-
+        
         let name = "\(recID.uuidString)_seg_\(String(format: "%03d", currentSegmentIndex)).m4a"
         let url  = recordingsRootURL.appendingPathComponent(name)
         currentSegmentFile = try? AVAudioFile(forWriting: url, settings: settings.avSettings)
@@ -336,14 +312,14 @@ final class AudioManager: ObservableObject {
     
     private func saveCurrentSegment() {
         guard let segFile = currentSegmentFile else { return }
-
+        
         // actual duration
         let dur = Double(currentSegmentFrames) / settings.sampleRate
         let segURL = segFile.url
-
+        
         currentSegmentFile = nil
         currentSegmentFrames = 0
-
+        
         backgroundContext.perform {
             let seg = Segment(context: self.backgroundContext)
             seg.id = UUID()
@@ -355,13 +331,18 @@ final class AudioManager: ObservableObject {
             seg.retryCount = 0
             seg.recording = self.currentRecording
             seg.startTime = Double(self.currentSegmentIndex - 1) * self.segmentDuration
-
+            
             if let rec = self.currentRecording {
                 rec.totalSegments += 1
                 rec.duration += dur
             }
-
+            
             try? self.backgroundContext.save()
+            DispatchQueue.main.async {
+                Task {
+                    await self.transcriptionManager.resumeQueuedWork()
+                }
+            }
         }
     }
     
@@ -381,14 +362,14 @@ final class AudioManager: ObservableObject {
             rec.title = ""
             rec.transcript = ""
             try? self.backgroundContext.save()
-
+            
             DispatchQueue.main.async { self.currentRecording = rec }
         }
     }
     
     private func processBuffer(_ buffer: AVAudioPCMBuffer) {
         guard state == .recording else { return }
-
+        
         do {
             try currentSegmentFile?.write(from: buffer)
         }
@@ -397,7 +378,7 @@ final class AudioManager: ObservableObject {
             return
         }
         currentSegmentFrames += buffer.frameLength
-
+        
         if currentSegmentFrames >= segmentTargetFrames {
             saveCurrentSegment()
             startNewSegment()
@@ -405,20 +386,5 @@ final class AudioManager: ObservableObject {
         updateLevel(from: buffer)
     }
     
-}
-
-
-struct Settings {
-    var sampleRate: Double = 48000
-    var channels: AVAudioChannelCount = 1
-    var bitRate: Int = 96000
-    var formatType: AudioFormatID = kAudioFormatMPEG4AAC
-    
-    var avSettings: [String: Any] {
-        [
-            AVFormatIDKey: formatType, AVSampleRateKey: sampleRate, AVNumberOfChannelsKey: channels,
-            AVEncoderBitRateKey: bitRate,
-        ]
-    }
 }
 

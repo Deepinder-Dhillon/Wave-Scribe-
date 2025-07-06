@@ -3,8 +3,15 @@ import SwiftData
 
 @main
 struct Wave_ScribeApp: App {
+
     @StateObject private var audioManager = AudioManager()
-    @StateObject private var dataStack = CoreDataStack.shared
+    
+    init() {
+        let bgContext = CoreDataStack.shared.persistentContainer.newBackgroundContext()
+    
+
+        
+    }
     
     
     var body: some Scene {
@@ -12,7 +19,8 @@ struct Wave_ScribeApp: App {
         WindowGroup {
             MainView()
                 .environmentObject(audioManager)
-                .environment(\.managedObjectContext,dataStack.viewContext)
+                .environment(\.managedObjectContext,
+                              CoreDataStack.shared.persistentContainer.viewContext)
                 .onAppear {
                     requestMicPermission()
                 }
