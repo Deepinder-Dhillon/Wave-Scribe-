@@ -1,6 +1,7 @@
 import AVFoundation
 import Foundation
 import CoreData
+import CloudKit
 
 final class AudioManager: ObservableObject {
     enum RecordingState {
@@ -90,9 +91,38 @@ final class AudioManager: ObservableObject {
         addInputTap()
     }
     
+    func saveAPIKeyRecord() async{
+        let recordID = CKRecord.ID(recordName: "whisper-api")
+        let record = CKRecord(recordType: "APIKey", recordID: recordID)
+
+       // save your own key
+        record.encryptedValues["key"] = "your key" as NSString
+
+        let privateDB = CKContainer.default().privateCloudDatabase
+        do {
+            try await privateDB.save(record)
+        } catch {
+            print("failed to save key:", error)
+        }
+    }
+    
+    
+    func fetchAPIKey() async {
+        let recordID = CKRecord.ID(recordName: "whisper-api")
+        let privateDB = CKContainer.default().privateCloudDatabase
+
+        do {
+            let record = try await privateDB.record(for: recordID)
+            let key = record.encryptedValues["key"] as? String
+        
+        } catch {
+            print("failed to fetch apikey:", error)
+        }
+    }
+    
     func start() {
         guard state == .stopped else { return }
-            
+        
         setupEngine()
         wasInterrupted = false
         resumePrompt = false
@@ -322,6 +352,7 @@ final class AudioManager: ObservableObject {
             seg.fileURL = segURL.path
             seg.createdAt = Date()
             seg.state = "pendingUpload"
+            seg.retryCount = 0
             seg.recording = self.currentRecording
             seg.startTime = Double(self.currentSegmentIndex - 1) * self.segmentDuration
 
@@ -375,6 +406,7 @@ final class AudioManager: ObservableObject {
     }
     
 }
+
 
 struct Settings {
     var sampleRate: Double = 48000
