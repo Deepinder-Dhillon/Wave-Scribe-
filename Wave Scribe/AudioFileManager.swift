@@ -2,7 +2,7 @@ import AVFoundation
 import Foundation
 
 protocol AudioFileManagerDelegate: AnyObject {
-    func audioFileManager(_ manager: AudioFileManager, didCreateSegmentFile file: AVAudioFile, at url: URL)
+    func audioFileManager(_ manager: AudioFileManager, didCreateFile url: URL)
     func audioFileManager(_ manager: AudioFileManager, didEncounterError error: Error)
 }
 
@@ -13,7 +13,7 @@ final class AudioFileManager {
     private var currentSegmentFile: AVAudioFile?
     private var currentSegmentFrames: AVAudioFrameCount = 0
     private var currentSegmentIndex: Int = 0
-    private let segmentDuration: Double = 30
+    private let segmentDuration: Double = 5
     
     private var settings = Settings()
     
@@ -55,7 +55,7 @@ final class AudioFileManager {
             currentSegmentFile = try AVAudioFile(forWriting: url, settings: settings.avSettings)
             if let file = currentSegmentFile {
                 Task { @MainActor in
-                    delegate?.audioFileManager(self, didCreateSegmentFile: file, at: url)
+                    delegate?.audioFileManager(self, didCreateFile: url)
                 }
             }
         } catch {
@@ -76,6 +76,10 @@ final class AudioFileManager {
                 delegate?.audioFileManager(self, didEncounterError: error)
             }
         }
+    }
+    
+    func processBuffer(_ buffer: AVAudioPCMBuffer) {
+        writeBuffer(buffer)
     }
     
     func saveCurrentSegment() -> (url: URL, duration: Double, index: Int)? {

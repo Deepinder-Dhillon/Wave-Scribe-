@@ -13,10 +13,21 @@
 		7FC4C20F2E1779C20033AF4C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FC4C20D2E1779830033AF4C /* CoreGraphics.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		7F806ABB2E1BA92800C67983 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7F498C812E150FD9003996D5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7F498C882E150FD9003996D5;
+			remoteInfo = "Wave Scribe";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		7F2E8C3B2E18AD8C00D3CBD8 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		7F498C892E150FD9003996D5 /* Wave Scribe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Wave Scribe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F498CB12E163D86003996D5 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		7F806AB72E1BA92800C67983 /* Wave ScribeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Wave ScribeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FC4C20D2E1779830033AF4C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -24,6 +35,11 @@
 		7F498C8B2E150FD9003996D5 /* Wave Scribe */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Wave Scribe";
+			sourceTree = "<group>";
+		};
+		7F806AB82E1BA92800C67983 /* Wave ScribeTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Wave ScribeTests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -39,6 +55,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7F806AB42E1BA92800C67983 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -47,6 +70,7 @@
 			children = (
 				7F2E8C3A2E18AD8C00D3CBD8 /* Model.xcdatamodeld */,
 				7F498C8B2E150FD9003996D5 /* Wave Scribe */,
+				7F806AB82E1BA92800C67983 /* Wave ScribeTests */,
 				7F498CB02E163D86003996D5 /* Frameworks */,
 				7F498C8A2E150FD9003996D5 /* Products */,
 			);
@@ -56,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				7F498C892E150FD9003996D5 /* Wave Scribe.app */,
+				7F806AB72E1BA92800C67983 /* Wave ScribeTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,6 +120,29 @@
 			productReference = 7F498C892E150FD9003996D5 /* Wave Scribe.app */;
 			productType = "com.apple.product-type.application";
 		};
+		7F806AB62E1BA92800C67983 /* Wave ScribeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7F806ABD2E1BA92800C67983 /* Build configuration list for PBXNativeTarget "Wave ScribeTests" */;
+			buildPhases = (
+				7F806AB32E1BA92800C67983 /* Sources */,
+				7F806AB42E1BA92800C67983 /* Frameworks */,
+				7F806AB52E1BA92800C67983 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7F806ABC2E1BA92800C67983 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				7F806AB82E1BA92800C67983 /* Wave ScribeTests */,
+			);
+			name = "Wave ScribeTests";
+			packageProductDependencies = (
+			);
+			productName = "Wave ScribeTests";
+			productReference = 7F806AB72E1BA92800C67983 /* Wave ScribeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -108,6 +156,10 @@
 					7F498C882E150FD9003996D5 = {
 						CreatedOnToolsVersion = 16.2;
 						LastSwiftMigration = 1620;
+					};
+					7F806AB62E1BA92800C67983 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 7F498C882E150FD9003996D5;
 					};
 				};
 			};
@@ -129,12 +181,20 @@
 			projectRoot = "";
 			targets = (
 				7F498C882E150FD9003996D5 /* Wave Scribe */,
+				7F806AB62E1BA92800C67983 /* Wave ScribeTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		7F498C872E150FD9003996D5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7F806AB52E1BA92800C67983 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -152,7 +212,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7F806AB32E1BA92800C67983 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7F806ABC2E1BA92800C67983 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7F498C882E150FD9003996D5 /* Wave Scribe */;
+			targetProxy = 7F806ABB2E1BA92800C67983 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		7F498C972E150FDB003996D5 /* Debug */ = {
@@ -353,6 +428,42 @@
 			};
 			name = Release;
 		};
+		7F806ABE2E1BA92800C67983 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9ZK9QQ8854;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.deepinder.Wave-ScribeTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wave Scribe.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Wave Scribe";
+			};
+			name = Debug;
+		};
+		7F806ABF2E1BA92800C67983 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9ZK9QQ8854;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.deepinder.Wave-ScribeTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wave Scribe.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Wave Scribe";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -370,6 +481,15 @@
 			buildConfigurations = (
 				7F498C9A2E150FDB003996D5 /* Debug */,
 				7F498C9B2E150FDB003996D5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7F806ABD2E1BA92800C67983 /* Build configuration list for PBXNativeTarget "Wave ScribeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7F806ABE2E1BA92800C67983 /* Debug */,
+				7F806ABF2E1BA92800C67983 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

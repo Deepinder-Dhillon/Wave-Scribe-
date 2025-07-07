@@ -1,8 +1,11 @@
 import AVFoundation
 import Foundation
 
+// MARK: - AudioEngineServiceDelegate Protocol
+
 protocol AudioEngineServiceDelegate: AnyObject {
     func audioEngineService(_ service: AudioEngineService, didUpdateAudioLevel level: CGFloat)
+    func audioEngineService(_ service: AudioEngineService, didChangeState state: AudioEngineService.RecordingState)
     func audioEngineService(_ service: AudioEngineService, didEncounterError error: Error)
     func audioEngineService(_ service: AudioEngineService, didProcessBuffer buffer: AVAudioPCMBuffer)
 }
@@ -48,8 +51,6 @@ final class AudioEngineService: NSObject {
         try session.setActive(true, options: .notifyOthersOnDeactivation)
     }
     
-    // MARK: - Engine Setup
-    
     private func connectGraph() {
         let input = engine.inputNode
         let HWFormat = input.outputFormat(forBus: 0)
@@ -62,7 +63,8 @@ final class AudioEngineService: NSObject {
                     commonFormat: .pcmFormatFloat32,
                     sampleRate: settings.sampleRate,
                     channels: settings.channels,
-                    interleaved: false)!
+                    interleaved: false
+                )!
             )
         }
     }
@@ -77,12 +79,12 @@ final class AudioEngineService: NSObject {
         engine.prepare()
     }
     
-    func rebuildEngine() {
+    private func rebuildEngine() {
         setupEngine()
         addInputTap()
     }
     
-    // MARK: - Recording Control
+    // MARK: - Public Interface
     
     func start() throws {
         guard state == .stopped else { return }
@@ -128,11 +130,27 @@ final class AudioEngineService: NSObject {
         wasInterrupted = false
     }
     
+    func userResume() {
+        guard wasInterrupted && state == .paused else { return }
+        
+        rebuildEngine()
+        do {
+            try resume()
+            wasInterrupted = false
+        } catch {
+            print("User resume failed:", error)
+        }
+    }
+    
+    var isInterrupted: Bool {
+        return wasInterrupted
+    }
+    
     // MARK: - Audio Processing
     
     private func addInputTap() {
         if tapInstalled {
-            engine.inputNode.removeTap(onBus: 0)
+            mixerNode.removeTap(onBus: 0)
             tapInstalled = false
         }
         
@@ -147,6 +165,8 @@ final class AudioEngineService: NSObject {
         guard state == .recording else { return }
         
         updateLevel(from: buffer)
+        
+        // Pass buffer to delegate for processing
         Task { @MainActor in
             self.delegate?.audioEngineService(self, didProcessBuffer: buffer)
         }
@@ -186,7 +206,7 @@ final class AudioEngineService: NSObject {
         )
     }
     
-    // MARK: - Interruption Handling
+    // MARK: - Route Change Handling
     
     private func setupNotifications() {
         let nc = NotificationCenter.default
@@ -208,15 +228,15 @@ final class AudioEngineService: NSObject {
     @objc private func handleRouteChange(notification: Notification) {
         guard let userInfo = notification.userInfo,
               let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
-              let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue)
-        else {
+              let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else {
             return
         }
         
         switch reason {
         case .newDeviceAvailable, .oldDeviceUnavailable:
             routeChange(wasRecording: state == .recording)
-        default: ()
+        default:
+            break
         }
     }
     
@@ -232,17 +252,16 @@ final class AudioEngineService: NSObject {
             try engine.start()
             if wasRecording { state = .recording }
         } catch {
-            Task { @MainActor in
-                self.delegate?.audioEngineService(self, didEncounterError: error)
-            }
+            print("Restart after route change failed:", error)
         }
     }
+    
+    // MARK: - Interruption Handling
     
     @objc private func handleInterruption(notification: Notification) {
         guard let userInfo = notification.userInfo,
               let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
-              let type = AVAudioSession.InterruptionType(rawValue: typeValue)
-        else {
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
             return
         }
         
@@ -262,29 +281,45 @@ final class AudioEngineService: NSObject {
             
             if wasInterrupted && state == .paused {
                 if options.contains(.shouldResume) {
-                    try? resume()
+                    do {
+                        try resume()
+                    } catch {
+                        print("Resume after interruption failed:", error)
+                    }
                 }
             }
             
-        default: ()
+        @unknown default:
+            break
         }
     }
     
-    // MARK: - Public Interface
+    // MARK: - Device Information
     
-    func userResume() {
-        guard wasInterrupted && state == .paused else { return }
-        
-        rebuildEngine()
-        try? resume()
-        wasInterrupted = false
+    var currentInputDevice: String {
+        let inputs = session.currentRoute.inputs
+        return inputs.first?.portName ?? "Unknown"
     }
     
-    var isInterrupted: Bool {
-        return wasInterrupted
+    var currentOutputDevice: String {
+        let outputs = session.currentRoute.outputs
+        return outputs.first?.portName ?? "Unknown"
     }
     
-    var currentAudioLevel: CGFloat {
-        return audioLevel
+    var isHeadphonesConnected: Bool {
+        let outputs = session.currentRoute.outputs
+        return outputs.contains { output in
+            output.portType == .headphones || 
+            output.portType == .bluetoothHFP || 
+            output.portType == .bluetoothA2DP
+        }
+    }
+    
+    var isBluetoothConnected: Bool {
+        let outputs = session.currentRoute.outputs
+        return outputs.contains { output in
+            output.portType == .bluetoothHFP || 
+            output.portType == .bluetoothA2DP
+        }
     }
 } 

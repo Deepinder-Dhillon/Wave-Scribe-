@@ -5,7 +5,7 @@ extension CoreDataStack {
         let ctx = viewContext
         guard ctx.hasChanges else { return }
         do { try ctx.save() }
-        catch { print("ViewContext save error:", error.localizedDescription) }
+        catch {}
     }
 
     func delete<T: NSManagedObject>(_ object: T) {

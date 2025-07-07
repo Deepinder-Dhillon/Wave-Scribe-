@@ -2,51 +2,50 @@ import Foundation
 import SwiftUI
 
 @MainActor
-protocol RecordingUIStateManagerDelegate: AnyObject {
-    func uiStateManager(_ manager: RecordingUIStateManager, didUpdateState state: RecordingUIStateManager.RecordingState)
-    func uiStateManager(_ manager: RecordingUIStateManager, didUpdateAudioLevel level: CGFloat)
-    func uiStateManager(_ manager: RecordingUIStateManager, didUpdateUIDisabled disabled: Bool)
-    func uiStateManager(_ manager: RecordingUIStateManager, didUpdateResumePrompt show: Bool)
-}
-
-@MainActor
 final class RecordingUIStateManager: ObservableObject {
     enum RecordingState {
         case recording, paused, stopped
     }
     
-    weak var delegate: RecordingUIStateManagerDelegate?
-    
     @Published private(set) var state: RecordingState = .stopped
     @Published var audioLevel: CGFloat = 0.0
     @Published private(set) var isUIDisabled = false
-    @Published var resumePrompt: Bool = false
+    @Published var resumePrompt = false
     @Published private(set) var currentFileURL: URL?
+    @Published var showError = false
+    @Published var errorTitle = ""
+    @Published var errorMessage = ""
     
     // MARK: - State Management
     
     func updateRecordingState(_ newState: RecordingState) {
         state = newState
-        delegate?.uiStateManager(self, didUpdateState: newState)
     }
     
     func updateAudioLevel(_ level: CGFloat) {
         audioLevel = level
-        delegate?.uiStateManager(self, didUpdateAudioLevel: level)
     }
     
     func updateUIDisabled(_ disabled: Bool) {
         isUIDisabled = disabled
-        delegate?.uiStateManager(self, didUpdateUIDisabled: disabled)
     }
     
     func updateResumePrompt(_ show: Bool) {
         resumePrompt = show
-        delegate?.uiStateManager(self, didUpdateResumePrompt: show)
     }
     
     func updateCurrentFileURL(_ url: URL?) {
         currentFileURL = url
+    }
+    
+    func showError(_ title: String, message: String) {
+        errorTitle = title
+        errorMessage = message
+        showError = true
+    }
+    
+    func dismissError() {
+        showError = false
     }
     
     // MARK: - Convenience Methods
@@ -60,8 +59,7 @@ final class RecordingUIStateManager: ObservableObject {
     
     func pauseRecording() {
         state = .paused
-        audioLevel = 0.0  // Reset audio level immediately when paused
-        delegate?.uiStateManager(self, didUpdateState: state)
+        audioLevel = 0.0
     }
     
     func resumeRecording() {
@@ -94,5 +92,6 @@ final class RecordingUIStateManager: ObservableObject {
         updateUIDisabled(false)
         updateResumePrompt(false)
         updateCurrentFileURL(nil)
+        showError = false
     }
 } 

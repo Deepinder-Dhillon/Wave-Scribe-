@@ -6,26 +6,27 @@ struct Wave_ScribeApp: App {
 
     @StateObject private var audioManager = AudioManager()
     @State private var apiKey: String = ""
+    @State private var isLoading = true
     
     init() {
-        // No async work in init
     }
     
     var body: some Scene {
         WindowGroup {
-            if !apiKey.isEmpty {
+            if isLoading {
+                VStack {
+                    ProgressView("Loading API Key...")
+                        .padding()
+                }
+                .onAppear {
+                    Task {
+                        apiKey = await fetchAPIKey()
+                        isLoading = false
+                    }
+                }
+            } else {
                 MainView(apiKey: apiKey)
                     .environmentObject(audioManager)
-                    .environment(\.managedObjectContext,
-                                  CoreDataStack.shared.persistentContainer.viewContext)
-            } else {
-                ProgressView("Loading API Key...")
-                    .onAppear {
-                        requestMicPermission()
-                        Task {
-                            apiKey = await fetchAPIKey()
-                        }
-                    }
             }
         }
     }

@@ -1,9 +1,3 @@
-//
-//  Settings.swift
-//  Wave Scribe
-//
-//  Created by Deepinder on 2025-07-05.
-//
 
 import AVFAudio
 
@@ -12,6 +6,7 @@ struct Settings {
     var channels: AVAudioChannelCount = 1
     var bitRate: Int = 96000
     var formatType: AudioFormatID = kAudioFormatMPEG4AAC
+    var segmentDuration: TimeInterval = 10.0
     
     var avSettings: [String: Any] {
         [

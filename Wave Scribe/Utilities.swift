@@ -35,14 +35,13 @@ func fetchAPIKey() async -> String {
     let recordID = CKRecord.ID(recordName: "whisper-api")
     let privateDB = CKContainer.default().privateCloudDatabase
     
-    var key = ""
     do {
         let record = try await privateDB.record(for: recordID)
-        key = record.encryptedValues["key"] as? String ?? ""
-    
+        if let key = record.encryptedValues["key"] as? String, !key.isEmpty {
+            return key
+        }
     } catch {
-        print("failed to fetch apikey:", error)
+        print("No API key found in CloudKit")
     }
-    return key
-    
+    return ""
 }

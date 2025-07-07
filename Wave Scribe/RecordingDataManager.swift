@@ -1,5 +1,6 @@
 import Foundation
 import CoreData
+import AVFoundation
 
 protocol RecordingDataManagerDelegate: AnyObject {
     func recordingDataManager(_ manager: RecordingDataManager, didCreateRecording recording: Recording)
@@ -8,12 +9,16 @@ protocol RecordingDataManagerDelegate: AnyObject {
 
 final class RecordingDataManager {
     weak var delegate: RecordingDataManagerDelegate?
+    weak var audioManager: AudioManager?
+    weak var transcriptionViewModel: TranscriptionViewModel?
     
     private let backgroundContext: NSManagedObjectContext
     private let transcriptionCoordinator: TranscriptionCoordinator
     
     init(apiKey: String) {
         self.backgroundContext = CoreDataStack.shared.persistentContainer.newBackgroundContext()
+        self.backgroundContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        self.backgroundContext.automaticallyMergesChangesFromParent = true
         self.transcriptionCoordinator = TranscriptionCoordinator(context: backgroundContext, apiKey: apiKey)
     }
     
@@ -31,9 +36,13 @@ final class RecordingDataManager {
         
         do {
             try backgroundContext.save()
-            delegate?.recordingDataManager(self, didCreateRecording: recording)
+            DispatchQueue.main.async {
+                self.delegate?.recordingDataManager(self, didCreateRecording: recording)
+            }
         } catch {
-            delegate?.recordingDataManager(self, didEncounterError: error)
+            DispatchQueue.main.async {
+                self.delegate?.recordingDataManager(self, didEncounterError: error)
+            }
         }
         
         return recording
@@ -44,6 +53,11 @@ final class RecordingDataManager {
             recording.status = status
             try? self.backgroundContext.save()
         }
+    }
+    
+    func processBuffer(_ buffer: AVAudioPCMBuffer) {
+        // This method is called for each audio buffer during recording
+        // Currently no processing needed here, but could be extended for real-time analysis
     }
     
     // MARK: - Segment Management
@@ -62,23 +76,41 @@ final class RecordingDataManager {
                 segment.id = UUID()
                 segment.fileURL = url.path
                 segment.duration = duration
-                segment.index = Int32(index)
+                segment.index = Int16(index)
                 segment.createdAt = Date()
-                segment.state = "pending"
+                segment.state = "recording"
                 segment.recording = recording
                 
                 try self.backgroundContext.save()
                 
+                // Update transcription view model on main thread
+                Task { @MainActor in
+                    self.transcriptionViewModel?.addSegment(id: segment.id!, index: index)
+                }
+                
                 // Load audio data and trigger transcription
                 do {
                     let audioData = try Data(contentsOf: url)
-                    self.transcriptionCoordinator.transcribeSegment(segment)
+                    
+                    // Update status to uploading before sending to API
+                    segment.state = "uploading"
+                    try self.backgroundContext.save()
+                    
+                    Task { @MainActor in
+                        self.transcriptionViewModel?.updateSegmentToUploading(id: segment.id!)
+                    }
+                    
+                    Task {
+                        await self.transcriptionCoordinator.transcribeSegment(segmentID: segment.id!, fileURL: url)
+                    }
                 } catch {
                     // Handle audio data loading error
+                    segment.state = "failed"
+                    try? self.backgroundContext.save()
                 }
                 
             } catch {
-                Task { @MainActor in
+                DispatchQueue.main.async {
                     self.delegate?.recordingDataManager(self, didEncounterError: error)
                 }
             }
@@ -100,7 +132,7 @@ final class RecordingDataManager {
             do {
                 try self.backgroundContext.save()
             } catch {
-                Task { @MainActor in
+                DispatchQueue.main.async {
                     self.delegate?.recordingDataManager(self, didEncounterError: error)
                 }
             }
