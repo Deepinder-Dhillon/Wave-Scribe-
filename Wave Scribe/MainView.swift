@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MainView: View {
+    let apiKey: String
     @EnvironmentObject var audioManager: AudioManager
     @Environment(\.managedObjectContext) private var viewContext
     
@@ -66,11 +67,14 @@ struct MainView: View {
                 RecordView()
                     .environmentObject(audioManager)
                     .onDisappear{
-                        if audioManager.state != .stopped {
+                        if audioManager.uiStateManager.state != .stopped {
                             audioManager.stop()
                         }
                     }
             }
+        }
+        .onAppear {
+            audioManager.configure(apiKey: apiKey)
         }
     }
     
@@ -97,7 +101,7 @@ struct MainView: View {
 
 
 #Preview {
-    MainView()
+    MainView(apiKey: "")
         .environmentObject(AudioManager())
     
 }

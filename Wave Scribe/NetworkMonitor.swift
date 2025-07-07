@@ -1,28 +1,26 @@
+import Foundation
 import Network
 
-final class NetworkMonitor: ObservableObject {
+class NetworkMonitor: ObservableObject {
+    @Published var isConnected = false
+    
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: "NetworkMonitor")
-    private var wasOnline = true
-    @Published private(set) var isOnline = true
-    
-    var onStatusChange: (Bool) -> Void = { _ in }
     
     init() {
+        setupMonitoring()
+    }
+    
+    private func setupMonitoring() {
         monitor.pathUpdateHandler = { [weak self] path in
-            guard let self else { return }
-            
-            let isOnlineNow = (path.status == .satisfied)
-            
-            self.isOnline = isOnlineNow
-            
-            if wasOnline != isOnlineNow {
-                onStatusChange(isOnlineNow)
+            DispatchQueue.main.async {
+                self?.isConnected = path.status == .satisfied
             }
-            
-            wasOnline = isOnlineNow
-            
         }
         monitor.start(queue: queue)
+    }
+    
+    deinit {
+        monitor.cancel()
     }
 }

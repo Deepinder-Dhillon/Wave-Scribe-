@@ -1,4 +1,3 @@
-
 import SwiftUI
 
 import SwiftUI
@@ -13,8 +12,8 @@ struct TranscribeView: View {
     @FetchRequest var completedSegments: FetchedResults<Segment>
 
     init() {
-        // “currentRecordingID” is set when you start()
-        // we’ll just fetch *all* completed segments for simplicity
+        // "currentRecordingID" is set when you start()
+        // we'll just fetch *all* completed segments for simplicity
         let request = NSFetchRequest<Segment>(entityName: "Segment")
         request.predicate = NSPredicate(format: "state == %@", "completed")
         request.sortDescriptors = [
@@ -30,7 +29,7 @@ struct TranscribeView: View {
         VStack {
             // simple controls
             HStack {
-                if audioManager.state == .recording {
+                if audioManager.uiStateManager.state == .recording {
                     Button("Stop") { audioManager.stop() }
                 } else {
                     Button("Start") { audioManager.start() }

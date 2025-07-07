@@ -23,7 +23,7 @@ struct RecordView: View {
                 .padding()
                 
                 if selectedMode == "Waveform" {
-                    WaveformView(level: $audioManager.audioLevel)
+                    WaveformView(level: $audioManager.uiStateManager.audioLevel)
                     
                 }
                 else {
@@ -35,7 +35,7 @@ struct RecordView: View {
                 Text(formatMMSSCs(elapsed))
                     .font(.system(size: 38))
                     .onReceive(timer) { _ in
-                        if audioManager.state == .recording {
+                        if audioManager.uiStateManager.state == .recording {
                             elapsed += 0.01
                             
                         }
@@ -58,34 +58,34 @@ struct RecordView: View {
                                 .opacity(0.7)
                             
                         }
-                        .disabled(audioManager.isUIDisabled)
-                        .opacity(audioManager.isUIDisabled ? 0.5 : 1)
+                        .disabled(audioManager.uiStateManager.isUIDisabled)
+                        .opacity(audioManager.uiStateManager.isUIDisabled ? 0.5 : 1)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                         .padding(.horizontal, 50)
                         
                     }
                     Button {
-                        if audioManager.state == .recording {
+                        if audioManager.uiStateManager.state == .recording {
                             audioManager.pause()
                         }
-                        else if audioManager.state == .paused {
+                        else if audioManager.uiStateManager.state == .paused {
                             audioManager.resume()
                         }
                     } label: {
-                        Image(systemName: audioManager.state == .recording
+                        Image(systemName: audioManager.uiStateManager.state == .recording
                               ? "pause.circle.fill"
                               : "largecircle.fill.circle")
                         .font(.system(size: 90))
                         .foregroundColor(.red)
                     }
-                    .disabled(audioManager.isUIDisabled)
-                    .opacity(audioManager.isUIDisabled ? 0.5 : 1)
+                    .disabled(audioManager.uiStateManager.isUIDisabled)
+                    .opacity(audioManager.uiStateManager.isUIDisabled ? 0.5 : 1)
                 }
                 .padding(.horizontal)
                 
             }
         }
-        .alert(isPresented: $audioManager.resumePrompt) {
+        .alert(isPresented: $audioManager.uiStateManager.resumePrompt) {
             Alert(
                 title: Text("Recording paused by system"),
                 message: Text("Would you like to resume or stop?"),
