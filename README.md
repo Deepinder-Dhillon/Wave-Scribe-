@@ -36,6 +36,20 @@ For more details, see the [SwiftOpenAI documentation](https://github.com/jamesro
 - **OpenAI API Integration**: Powered by [SwiftOpenAI](https://github.com/jamesrochabrun/SwiftOpenAI) by James Rochabrun and contributors.
 
 ---
+## Screenshots 
+
+<table align="center">
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/c54a2096-9e6f-48b5-b3ba-d9ae0a006d6e" width="200" /></td>
+    <td><img src="https://github.com/user-attachments/assets/be0553d9-a316-4efa-8f19-5304a31bdb87" width="200" /></td>
+    <td><img src="https://github.com/user-attachments/assets/20543e3e-8e7e-4eca-8a15-5d84f586efec" width="200" /></td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center">
+      <img src="https://github.com/user-attachments/assets/92d76d6a-7ada-4c8b-9ed8-751c240765c0" width="200" />
+    </td>
+  </tr>
+</table>
 
 ## Architecture
 
